@@ -3,6 +3,7 @@ import 'package:flutter_pro/dbHelper.dart';
 import 'package:flutter_pro/task.dart';
 import 'package:intl/intl.dart';
 import 'package:roundcheckbox/roundcheckbox.dart';
+import 'package:intl/intl.dart';
 
 
 
@@ -34,7 +35,7 @@ class _HomeState extends State < Home > {
   
   late int val ;
   late String name ; 
-  late String dueDate ;
+   String ? dueDate ;
   DateTime date = DateTime.now();
   DateTime date_task = DateTime.now() ;
   late String date_str ;
@@ -174,17 +175,19 @@ class _HomeState extends State < Home > {
                                         decoration: InputDecoration(
                                           hintText: 'No due data'
                                                  ),
-                                                 validator: (value) {
-                                        if (value == null || value.isEmpty){
-                                          return 'This is Required' ;
-                                        }
-                                      },
                                           onChanged: (value) {
                                             dueDate = value ;
-                                             
+                                            
+                                    },
+                                    validator: (value) {
+                                      if (value == null )
+                                      value = '' ;
+                                      dueDate = value ;
+                                      
                                     },
                                               ),
                                      ),
+                                     
                        
                        
                                     SizedBox(height: 60,),
@@ -204,7 +207,7 @@ class _HomeState extends State < Home > {
                                              DateTime ?  newDate = await showDatePicker(
                                                 context: context, 
                                                 initialDate: date,
-                                                 firstDate: DateTime(1900),
+                                                 firstDate: date ,
                                                   lastDate: DateTime(2100),
                                                   );
                                                   if(newDate == null) {
@@ -213,7 +216,8 @@ class _HomeState extends State < Home > {
                                                  
                                                     setState(() {
                                                       date_task = newDate ;
-                                                      date_str = date_task.toString();
+                                                      date_str = DateFormat.yMd().format(date_task);
+					  
                                                     });
                                                   
                                           },
@@ -253,9 +257,12 @@ class _HomeState extends State < Home > {
                        
                                             onPressed: ()async{
                                               Task task = Task({'name': name , 'due_date' : dueDate , 'date' : date_str }); 
-                                              helper.createTask(task);
                                               int id = await helper.createTask(task);
                                               Navigator.of(context).pop() ;
+
+                                              setState(() {
+                                                date_task = date ;
+                                              });
                                             },
                                             
                                            ),
@@ -286,25 +293,11 @@ class _HomeState extends State < Home > {
                       itemCount: snapshot.data.length ,
                       itemBuilder: (context , index){
                         Task task = Task.fromMap(snapshot.data[index]);
-                        flag = task.dueDate != '' ;
+                        
 
                         return ListTile(
                        leading:
-                       Column(
-                        children: [
-                            if (flag) ...[
-                              RoundCheckBox(
-                        onTap: (selected) {
-                          fw = FontWeight.normal ;
-                        },
-                        size: 45 ,
-                        checkedWidget: Icon(Icons.check, color: Colors.white ,size: 35,),
-                        checkedColor: Colors.purple,
-                         borderColor: Colors.purple,
-                        ),
-                            ]
-                           else ...[
-                              RoundCheckBox(
+                        RoundCheckBox(
                         onTap: (selected) {
                           fw = FontWeight.normal ;
                         },
@@ -313,9 +306,6 @@ class _HomeState extends State < Home > {
                         checkedColor: Colors.blue,
                          borderColor: Colors.blue ,
                         ),
-                            ],
-                        ],
-                    ),
                       
                           title: Text('${task.name} ${task.date} ', 
                           style: TextStyle(
@@ -324,7 +314,7 @@ class _HomeState extends State < Home > {
                             
                           ),
 
-                        subtitle: Text(task.dueDate , 
+                        subtitle: Text(task.dueDate ?? '' , 
                         style: TextStyle(
                           color: Colors.grey ,
                         ),
