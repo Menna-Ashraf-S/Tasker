@@ -3,7 +3,6 @@ import 'package:flutter_pro/dbHelper.dart';
 import 'package:flutter_pro/task.dart';
 import 'package:intl/intl.dart';
 import 'package:roundcheckbox/roundcheckbox.dart';
-import 'package:intl/intl.dart';
 
 
 
@@ -38,9 +37,10 @@ class _HomeState extends State < Home > {
    String ? dueDate ;
   DateTime date = DateTime.now();
   DateTime date_task = DateTime.now() ;
-  late String date_str ;
+   String date_str = DateFormat.yMd().format(DateTime.now());
   late DbHelper helper  ;
   bool flag = false ;
+   int check = 0 ;
   FontWeight fw = FontWeight.bold ;
   
 
@@ -256,7 +256,7 @@ class _HomeState extends State < Home > {
                                            ),
                        
                                             onPressed: ()async{
-                                              Task task = Task({'name': name , 'due_date' : dueDate , 'date' : date_str }); 
+                                              Task task = Task({'name': name , 'due_date' : dueDate , 'date' : date_str , 'check': check }); 
                                               int id = await helper.createTask(task);
                                               Navigator.of(context).pop() ;
 
@@ -300,11 +300,13 @@ class _HomeState extends State < Home > {
                         RoundCheckBox(
                         onTap: (selected) {
                           fw = FontWeight.normal ;
+                          check = 1 ;
                         },
                         size: 45 ,
                         checkedWidget: Icon(Icons.check, color: Colors.white ,size: 35,),
                         checkedColor: Colors.blue,
                          borderColor: Colors.blue ,
+                          
                         ),
                       
                           title: Text('${task.name} ${task.date} ', 

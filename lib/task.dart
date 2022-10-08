@@ -6,11 +6,11 @@ class Task {
  late String _name ;
   String ? dueDate ;
  late String _date ;
+ late int isChecked ;
  
  
  
  String get name => _name ;
-
  String get date => _date ;
 
  Task (dynamic obj){
@@ -20,6 +20,7 @@ class Task {
   _name = obj['name'];
   _date = obj['date'];
   dueDate = obj['due_date'];
+  isChecked = obj['check'];
  }
 
  Task.fromMap (Map <String , dynamic> data ){
@@ -29,13 +30,15 @@ class Task {
   _name = data['name'];
   _date = data['date'];
   dueDate = data['due_date'];
+  isChecked = data['check'];
  }
 
  Map <String , dynamic> toMap () {
  Map <String , dynamic> Data = { 
   'name' : _name  ,
    'due_date':dueDate ,
-    'date': _date
+    'date': _date ,
+    'check' : isChecked,
     };
 
  if (id != null){
